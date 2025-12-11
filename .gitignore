@@ -1,0 +1,96 @@
+HELP.md
+
+##############################
+# GRADLE (Kotlin/Spring Boot)
+##############################
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Ignore build dirs everywhere EXCEPT source folders
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+##############################
+# IDE FILES
+##############################
+
+# IntelliJ / JetBrains
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# VS Code
+.vscode/
+
+# STS / Eclipse
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+##############################
+# KOTLIN
+##############################
+.kotlin/
+
+##############################
+# LOG FILES
+##############################
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+##############################
+# FRONTEND (Astro, Tailwind)
+##############################
+# Production build output
+dist/
+
+# Astro's internal build files
+.astro/
+
+# Node dependencies
+node_modules/
+
+##############################
+# ENV FILES
+##############################
+.env
+.env.production
+.env.local
+.env.*.local
+
+##############################
+# OS FILES
+##############################
+.DS_Store
+
+##############################
+# PLAYWRIGHT
+##############################
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+

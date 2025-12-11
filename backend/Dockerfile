@@ -1,9 +1,16 @@
 FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 
-COPY . .
+COPY gradle gradle
+COPY gradlew .
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
 
 RUN chmod +x ./gradlew
+RUN ./gradlew --version
+RUN ./gradlew dependencies --no-daemon || return 0
+
+COPY . .
 
 RUN ./gradlew clean bootJar -x test --no-daemon
 

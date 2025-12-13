@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -56,4 +57,17 @@ graalvmNative {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    val mockitoAgentPath = configurations.getByName("testRuntimeClasspath")
+        .filter { it.name.contains("byte-buddy-agent") }
+        .single()
+        .absolutePath
+
+    jvmArgs(
+        "-javaagent:$mockitoAgentPath",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "-XX:+EnableDynamicAgentLoading",
+        "-Xshare:off"
+    )
 }

@@ -7,6 +7,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
+import org.springframework.security.authentication.LockedException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -22,6 +25,39 @@ class GlobalExceptionHandler {
                 "error" to "Validation Error",
                 "message" to "Input validation failed",
                 "fields" to errors
+            )
+        )
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentials(ex: BadCredentialsException): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            mapOf(
+                "status" to 401,
+                "error" to "Unauthorized",
+                "message" to (ex.message ?: "Invalid credentials")
+            )
+        )
+    }
+
+    @ExceptionHandler(LockedException::class)
+    fun handleLocked(ex: LockedException): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+            mapOf(
+                "status" to 403,
+                "error" to "Account Locked",
+                "message" to (ex.message ?: "Your account has been locked")
+            )
+        )
+    }
+
+    @ExceptionHandler(DisabledException::class)
+    fun handleDisabled(ex: DisabledException): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            mapOf(
+                "status" to 401,
+                "error" to "Account Disabled",
+                "message" to (ex.message ?: "Your account is disabled")
             )
         )
     }

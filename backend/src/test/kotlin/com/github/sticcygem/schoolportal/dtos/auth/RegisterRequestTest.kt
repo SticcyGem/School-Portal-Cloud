@@ -13,6 +13,8 @@ class RegisterRequestTest {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
+    private fun <T> validateRequest(request: T) = validator.validate(request)
+
     private fun createAccountDetails(
         email: String? = "test@school.edu",
         password: String? = "securePassword123",
@@ -21,10 +23,8 @@ class RegisterRequestTest {
         middleName: String? = null
     ) = AccountDetails(email, password, firstName, lastName, middleName)
 
-    private fun <T> validateRequest(request: T) = validator.validate(request)
-
     @Test
-    fun `valid STUDENT request passes validation`() {
+    fun `should pass validation with valid student request`() {
         val request = RegisterStudentRequest(
             identity = createAccountDetails(),
             educationLevel = EducationLevel.UNDERGRADUATE,
@@ -35,7 +35,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `valid ADMIN request passes validation`() {
+    fun `should pass validation with valid admin request`() {
         val request = RegisterAdminRequest(
             identity = createAccountDetails()
         )
@@ -43,7 +43,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `invalid EMAIL format fails`() {
+    fun `should fail validation when email format is invalid`() {
         val request = RegisterAdminRequest(identity = createAccountDetails(email = "not-an-email"))
         val violations = validateRequest(request)
 
@@ -52,7 +52,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `missing EMAIL fails`() {
+    fun `should fail validation when email is null`() {
         val request = RegisterAdminRequest(identity = createAccountDetails(email = null))
         val violations = validateRequest(request)
 
@@ -60,7 +60,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `short PASSWORD fails`() {
+    fun `should fail validation when password is too short`() {
         val request = RegisterAdminRequest(identity = createAccountDetails(password = "short"))
         val violations = validateRequest(request)
 
@@ -68,7 +68,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `missing NAMES fail`() {
+    fun `should fail validation when names are missing`() {
         val request = RegisterAdminRequest(
             identity = createAccountDetails(firstName = null, lastName = null)
         )
@@ -80,7 +80,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `missing EDUCATION LEVEL fails`() {
+    fun `should fail validation when education level is missing`() {
         val request = RegisterStudentRequest(
             identity = createAccountDetails(),
             studentType = StudentType.REGULAR,
@@ -93,7 +93,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `missing STUDENT TYPE fails`() {
+    fun `should fail validation when student type is missing`() {
         val request = RegisterStudentRequest(
             identity = createAccountDetails(),
             educationLevel = EducationLevel.UNDERGRADUATE,
@@ -106,7 +106,7 @@ class RegisterRequestTest {
     }
 
     @Test
-    fun `missing COURSE CODE fails`() {
+    fun `should fail validation when course code is missing`() {
         val request = RegisterStudentRequest(
             identity = createAccountDetails(),
             educationLevel = EducationLevel.UNDERGRADUATE,

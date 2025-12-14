@@ -12,7 +12,7 @@ class LoginRequestTest {
     private fun <T> validate(request: T) = validator.validate(request)
 
     @Test
-    fun `valid credentials pass validation`() {
+    fun `should pass validation with valid credentials`() {
         val request = LoginRequest(
             email = "test@school.edu",
             password = "securePassword123"
@@ -21,7 +21,7 @@ class LoginRequestTest {
     }
 
     @Test
-    fun `invalid EMAIL format fails`() {
+    fun `should fail validation when email format is invalid`() {
         val request = LoginRequest(
             email = "not-an-email",
             password = "password123"
@@ -31,7 +31,7 @@ class LoginRequestTest {
     }
 
     @Test
-    fun `missing EMAIL fails`() {
+    fun `should fail validation when email is null`() {
         val request = LoginRequest(
             email = null,
             password = "password123"
@@ -41,7 +41,7 @@ class LoginRequestTest {
     }
 
     @Test
-    fun `missing PASSWORD fails`() {
+    fun `should fail validation when password is null`() {
         val request = LoginRequest(
             email = "test@school.edu",
             password = null
@@ -51,7 +51,7 @@ class LoginRequestTest {
     }
 
     @Test
-    fun `blank fields fail`() {
+    fun `should fail validation when fields are blank`() {
         val request = LoginRequest(
             email = "",
             password = ""

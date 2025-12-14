@@ -9,7 +9,7 @@ CREATE SCHEMA IF NOT EXISTS school;
 -- =============================================================================
 -- ENUM TYPES
 -- =============================================================================
-CREATE TYPE school.account_status AS ENUM ('ACTIVE', 'INACTIVE');
+CREATE TYPE school.account_status AS ENUM ('ACTIVE', 'LOCKED', 'BANNED', 'ARCHIVED');
 CREATE TYPE school.auth_provider_enum AS ENUM ('LOCAL', 'MICROSOFT');
 CREATE TYPE school.student_status_enum AS ENUM ('ADMITTED', 'ENROLLED', 'LEAVE_OF_ABSENCE', 'DROPPED', 'GRADUATED');
 CREATE TYPE school.education_level_enum AS ENUM ('UNDERGRADUATE', 'GRADUATE');
@@ -38,6 +38,8 @@ CREATE TABLE school.accounts
     auth_provider    school.auth_provider_enum NOT NULL DEFAULT 'LOCAL',
     auth_provider_id VARCHAR(255)              NULL,
     created_at       TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
+    failed_attempts  INT                       NOT NULL DEFAULT 0,
+    lock_time        TIMESTAMPTZ               NULL,
     PRIMARY KEY (account_id)
 );
 

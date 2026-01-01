@@ -1,0 +1,19 @@
+---
+const token = Astro.cookies.get('auth_token')?.value;
+
+if (token) {
+    return Astro.redirect('/dashboard');
+} else {
+    return Astro.redirect('/login');
+}
+---
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content="0;url=/login"/>
+</head>
+<body>
+<p>Redirecting to <a href="/login">login</a>...</p>
+</body>
+</html>

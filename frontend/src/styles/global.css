@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+    --color-plm-gold: #B18819;
+    --color-plm-navy: #13153A;
+    --color-text-gray: #666666;
+    --color-error-red: #d32f2f;
+
+    --font-sans: "Segoe UI", sans-serif;
+    --font-garamond: "EB Garamond", serif;
+    --font-century: "Century Gothic", sans-serif;
+
+    --animate-shake: shake 0.4s ease-in-out;
+
+    @keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+        25%, 75% {
+            transform: translateX(-5px);
+        }
+        50% {
+            transform: translateX(5px);
+        }
+    }
+}
+
+@utility hidden {
+    display: none;
+}

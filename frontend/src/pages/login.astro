@@ -1,0 +1,49 @@
+---
+import {Image} from 'astro:assets';
+import BaseLayout from '../components/BaseLayout.astro';
+import {LoginForm} from '../modules/auth/ui/LoginForm';
+import plmBackground from '../images/PLMBlurredMainBG.png';
+import plmLogo from '../images/PLMLogo.webp';
+---
+
+<BaseLayout title="Login - School Portal">
+
+    <main
+            class="min-h-dvh flex items-center justify-center p-5 overflow-hidden font-sans bg-cover bg-center bg-no-repeat"
+            style={`background-image: url(${plmBackground.src});`}
+    >
+        <div class="fixed inset-0 -z-10 bg-black/10"></div>
+
+        <div id="loginCard"
+             class="bg-white w-[90%] max-w-[350px] lg:max-w-[850px] lg:h-[450px] flex flex-col lg:flex-row rounded-[15px] shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden transition-all duration-300">
+
+            <div class="w-full lg:w-[350px] lg:border-r-2 lg:border-plm-gold flex flex-col justify-center items-center py-[30px] lg:p-5 text-center">
+                <Image src={plmLogo} alt="PLM Logo" class="w-[100px] lg:w-[150px] h-auto mb-[15px] lg:mb-[15px]"
+                       loading="eager"/>
+
+                <div class="hidden lg:block branding-text">
+                    <div class="font-garamond text-[20px] font-bold text-plm-gold leading-[1.2]">
+                        PAMANTASAN NG
+                    </div>
+                    <div class="font-garamond text-[20px] font-bold text-plm-gold leading-[1.2]">
+                        LUNGSOD NG MAYNILA
+                    </div>
+                    <div class="font-century text-[15px] text-plm-navy my-2.5">
+                        University of the City of Manila
+                    </div>
+                </div>
+
+                <p class="hidden lg:block text-sm text-[#999] max-w-[250px] leading-[1.4]">
+                    This is a multi-user academic portal developed for the new V2 Architecture.
+                </p>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center px-[30px] pb-10 pt-2 lg:p-[50px] relative w-full">
+                <h2 class="hidden lg:block font-garamond text-center text-[28px] font-bold text-plm-gold mb-1.5">
+                    Welcome Back!</h2>
+                <h1 class="font-century text-center text-2xl lg:text-[30px] font-bold text-plm-navy mb-5 lg:mb-[30px] uppercase">LOG IN</h1>
+                <LoginForm client:load/>
+            </div>
+        </div>
+    </main>
+</BaseLayout>

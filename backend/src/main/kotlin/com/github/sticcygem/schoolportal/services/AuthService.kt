@@ -2,8 +2,6 @@ package com.github.sticcygem.schoolportal.services
 
 import com.github.sticcygem.schoolportal.dtos.auth.AuthResponse
 import com.github.sticcygem.schoolportal.dtos.auth.LoginRequest
-import com.github.sticcygem.schoolportal.repositories.AccountRepository
-import com.github.sticcygem.schoolportal.repositories.UserProfileRepository
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
@@ -12,13 +10,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class AuthService(
-    private val accountRepository: AccountRepository,
-    private val userProfileRepository: UserProfileRepository,
+    private val accountService: AccountService,
+    private val userProfileService: UserProfileService,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService
 ) {
     fun login(request: LoginRequest): AuthResponse {
-        val account = accountRepository.findByEmail(request.email!!)
+        val account = accountService.findByEmail(request.email!!)
             ?: throw BadCredentialsException("Invalid email or password")
 
         if (!account.isEnabled) {
@@ -34,7 +32,7 @@ class AuthService(
         }
 
         val token = jwtService.generateToken(account)
-        val profile = userProfileRepository.findById(account.accountId).orElse(null)
+        val profile = userProfileService.findByAccountId(account.accountId)
 
         return AuthResponse(
             token = token,

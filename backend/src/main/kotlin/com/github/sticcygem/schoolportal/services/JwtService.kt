@@ -36,7 +36,7 @@ import javax.crypto.SecretKey
 @Service
 class JwtService(
     @param:Value($$"${jwt.secret}") private val secretKey: String,
-    @param:Value($$"${jwt.expiration}") private val expirationTime: Long
+    @param:Value($$"${jwt.expiration}") private val expirationTime: Int
 ) {
 
     private fun getSignInKey(): SecretKey {

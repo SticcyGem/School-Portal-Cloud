@@ -7,7 +7,7 @@ import org.springframework.data.domain.Persistable
 import java.util.UUID
 
 @Entity
-@Table(name = "user_profile", schema = "school")
+@Table(name = "user_profiles", schema = "school")
 class UserProfile(
     @Id
     @Column(name = "account_id")

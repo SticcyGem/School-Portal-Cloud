@@ -1,12 +1,9 @@
 package com.github.sticcygem.schoolportal.services
 
 import com.github.sticcygem.schoolportal.dtos.auth.LoginRequest
-import com.github.sticcygem.schoolportal.entities.account.Account
-import com.github.sticcygem.schoolportal.entities.account.Role
-import com.github.sticcygem.schoolportal.entities.account.UserProfile
 import com.github.sticcygem.schoolportal.entities.common.enums.AccountStatus
-import com.github.sticcygem.schoolportal.repositories.AccountRepository
-import com.github.sticcygem.schoolportal.repositories.UserProfileRepository
+import com.github.sticcygem.schoolportal.utils.createTestAccount
+import com.github.sticcygem.schoolportal.utils.createTestUserProfile
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -21,17 +18,15 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.Optional
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class AuthServiceTest {
+    @Mock
+    private lateinit var accountService: AccountService
 
     @Mock
-    private lateinit var accountRepository: AccountRepository
-
-    @Mock
-    private lateinit var userProfileRepository: UserProfileRepository
+    private lateinit var userProfileService: UserProfileService
 
     @Mock
     private lateinit var passwordEncoder: PasswordEncoder
@@ -45,21 +40,20 @@ class AuthServiceTest {
     @Test
     fun `should return AuthResponse when login is successful`() {
         val request = LoginRequest("test@school.edu", "password")
-        val mockAccount = Account(
-            email = "test@school.edu",
-            passwordHash = "password_hashed",
-            roles = mutableSetOf(Role(roleName = "STUDENT"))
-        )
+        val mockAccount = createTestAccount(email = "test@school.edu")
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(mockAccount)
+        given(accountService.findByEmail(request.email!!)).willReturn(mockAccount)
         given(passwordEncoder.matches(request.password, mockAccount.passwordHash)).willReturn(true)
         given(jwtService.generateToken(mockAccount)).willReturn("fake-jwt")
-        given(userProfileRepository.findById(mockAccount.accountId)).willReturn(Optional.empty())
+        given(userProfileService.findByAccountId(mockAccount.accountId)).willReturn(null)
 
         val result = authService.login(request)
 
         assertNotNull(result)
         assertEquals("fake-jwt", result.token)
+
+        verify(accountService).findByEmail(request.email)
+        verify(passwordEncoder).matches(request.password, mockAccount.passwordHash)
         verify(jwtService).generateToken(mockAccount)
     }
 
@@ -67,80 +61,87 @@ class AuthServiceTest {
     fun `should return UserProfile in response when profile exists`() {
         val request = LoginRequest("profile@school.edu", "password")
         val userId = UUID.randomUUID()
-        val mockAccount = Account(
+
+        val mockAccount = createTestAccount(
             accountId = userId,
-            email = "profile@school.edu",
-            passwordHash = "password_hashed"
+            email = "profile@school.edu"
         )
-        val mockProfile = UserProfile(
-            accountId = userId,
-            firstName = "John",
-            lastName = "Doe"
+        val mockProfile = createTestUserProfile(
+            accountId = userId
         )
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(mockAccount)
+        given(accountService.findByEmail(request.email!!)).willReturn(mockAccount)
         given(passwordEncoder.matches(request.password, mockAccount.passwordHash)).willReturn(true)
         given(jwtService.generateToken(mockAccount)).willReturn("token")
-        given(userProfileRepository.findById(userId)).willReturn(Optional.of(mockProfile))
+        given(userProfileService.findByAccountId(userId)).willReturn(mockProfile)
 
         val result = authService.login(request)
 
         assertEquals(mockProfile, result.profile)
+
+        verify(userProfileService).findByAccountId(userId)
     }
 
     @Test
     fun `should throw LockedException when account is LOCKED`() {
         val request = LoginRequest("locked@school.edu", "password")
-        val mockAccount = Account(
+
+        val mockAccount = createTestAccount(
             email = "locked@school.edu",
-            passwordHash = "password_hashed",
             status = AccountStatus.LOCKED
         )
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(mockAccount)
+        given(accountService.findByEmail(request.email!!)).willReturn(mockAccount)
 
         assertThrows<LockedException> {
             authService.login(request)
         }
+
+        verify(accountService).findByEmail(request.email)
     }
 
     @Test
     fun `should throw DisabledException when account is BANNED`() {
         val request = LoginRequest("banned@school.edu", "password")
-        val mockAccount = Account(
+        val mockAccount = createTestAccount(
             email = "banned@school.edu",
-            passwordHash = "password_hashed",
             status = AccountStatus.BANNED
         )
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(mockAccount)
+        given(accountService.findByEmail(request.email!!)).willReturn(mockAccount)
 
         assertThrows<DisabledException> {
             authService.login(request)
         }
+
+        verify(accountService).findByEmail(request.email!!)
     }
 
     @Test
     fun `should throw BadCredentialsException when password does not match`() {
         val request = LoginRequest("test@school.edu", "wrong_password")
-        val mockAccount = Account(email = "test@school.edu", passwordHash = "password_hashed")
+        val mockAccount = createTestAccount(email = "test@school.edu")
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(mockAccount)
+        given(accountService.findByEmail(request.email!!)).willReturn(mockAccount)
         given(passwordEncoder.matches(request.password, mockAccount.passwordHash)).willReturn(false)
 
         assertThrows<BadCredentialsException> {
             authService.login(request)
         }
+
+        verify(passwordEncoder).matches(request.password, mockAccount.passwordHash)
     }
 
     @Test
     fun `should throw BadCredentialsException when email is not found`() {
         val request = LoginRequest("unknown@school.edu", "password")
 
-        given(accountRepository.findByEmail(request.email!!)).willReturn(null)
+        given(accountService.findByEmail(request.email!!)).willReturn(null)
 
         assertThrows<BadCredentialsException> {
             authService.login(request)
         }
+
+        verify(accountService).findByEmail(request.email!!)
     }
 }

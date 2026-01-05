@@ -34,7 +34,7 @@ class Account(
     @Column(name = "auth_provider", columnDefinition = "school.auth_provider_enum")
     var authProvider: AuthProvider = AuthProvider.LOCAL,
 
-    @Column(name = "lock_timestamp", nullable = false)
+    @Column(name = "lock_time", nullable = false)
     var lockTime: LocalDateTime? = null,
 
     @ManyToMany(fetch = FetchType.EAGER)
